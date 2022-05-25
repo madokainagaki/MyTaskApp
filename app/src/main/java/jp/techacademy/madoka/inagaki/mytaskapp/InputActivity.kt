@@ -1,7 +1,10 @@
 package jp.techacademy.madoka.inagaki.mytaskapp
 
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
@@ -102,6 +105,7 @@ class InputActivity : AppCompatActivity() {
     private fun addTask() {
         val realm = Realm.getDefaultInstance()
 
+        //追加したりするときに必要なもの
         realm.beginTransaction()
 
         if (mTask == null) {
@@ -111,26 +115,49 @@ class InputActivity : AppCompatActivity() {
             val taskRealmResults = realm.where(Task::class.java).findAll()
 
             val identifier: Int =
+                //max(最大)のidがnull→まだ何もない→idは0になる
+                //nullじゃない→すでにidがある→一番大きなidに+1して最新のidを生成
                 if (taskRealmResults.max("id") != null) {
                     taskRealmResults.max("id")!!.toInt() + 1
                 } else {
                     0
                 }
+            //それをidとして代入
             mTask!!.id = identifier
         }
 
+        //editに入力したテキストをタイトル・コンテンツそれぞれに代入
         val title = title_edit_text.text.toString()
         val content = content_edit_text.text.toString()
 
+        //mTaskに代入
         mTask!!.title = title
         mTask!!.contents = content
+
         val calendar = GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute)
         val date = calendar.time
         mTask!!.date = date
 
+        //できあがったmTaskをコミット
         realm.copyToRealmOrUpdate(mTask!!)
         realm.commitTransaction()
 
         realm.close()
+
+
+        //タスクアラームレシーバーを起動するためのintent
+        val resultIntent = Intent(applicationContext, TaskAlarmReceiver::class.java)
+        //通知するときにタスクのタイトルを表示するのに必要になるのでputExtraを用意する
+        resultIntent.putExtra(EXTRA_TASK, mTask!!.id)
+
+        val resultPendingIntent = PendingIntent.getBroadcast(
+            this,
+            mTask!!.id,
+            resultIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, resultPendingIntent)
     }
 }
