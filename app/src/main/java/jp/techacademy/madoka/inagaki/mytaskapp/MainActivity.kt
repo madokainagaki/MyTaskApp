@@ -4,14 +4,15 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
+import android.provider.CalendarContract.Attendees.query
+import android.util.Log
 import androidx.appcompat.app.AlertDialog
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import io.realm.Realm
-import io.realm.RealmChangeListener
-import io.realm.Sort
+import io.realm.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_input.*
 import java.util.*
+
 
 const val EXTRA_TASK = "jp.techacademy.madoka.inagaki.mytaskapp.TASK"
 
@@ -32,6 +33,10 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener { view ->
             val intent = Intent(this, InputActivity::class.java)
             startActivity(intent)
+        }
+
+        btnCategory.setOnClickListener{
+            categorySearch()
         }
 
         // Realm設定
@@ -61,7 +66,7 @@ class MainActivity : AppCompatActivity() {
             builder.setMessage(task.title + "を削除します")
 
             //ok押したらresultsにtaskさがして代入
-            builder.setPositiveButton("OK"){_, _ ->
+            builder.setPositiveButton("OK"){ _, _ ->
                 val results = mRealm.where(Task::class.java).equalTo("id", task.id).findAll()
 
                 mRealm.beginTransaction()
@@ -97,7 +102,10 @@ class MainActivity : AppCompatActivity() {
     //リロード
     private fun reloadListView() {
         //すべてのタスクを並べて
-        val taskRealmResults = mRealm.where(Task::class.java).findAll().sort("date", Sort.DESCENDING)
+        val taskRealmResults = mRealm.where(Task::class.java).findAll().sort(
+            "date",
+            Sort.DESCENDING
+        )
         //タスクリストにコピーして
         mTaskAdapter.mTaskList = mRealm.copyFromRealm(taskRealmResults)
         //リストビュー1アダプターへ
@@ -107,8 +115,30 @@ class MainActivity : AppCompatActivity() {
         mTaskAdapter.notifyDataSetChanged()
     }
 
+    private fun categorySearch() {
+        val searchWord = sreachEdit.text.toString()
+
+        if(searchWord.isEmpty()) {
+            reloadListView()
+        }else{
+            val query: RealmQuery<Task> = mRealm.where(Task::class.java)
+            query.equalTo("category", searchWord)
+            val SearchResults: RealmResults<Task> = query.findAll()
+            Log.d("test", searchWord)
+            Log.d("test", SearchResults.toString())
+
+            mTaskAdapter.mTaskList = mRealm.copyFromRealm(SearchResults)
+            //リストビュー1アダプターへ
+            listView1.adapter = mTaskAdapter
+            //変わったことを伝える
+            mTaskAdapter.notifyDataSetChanged()
+        }
+    }
+
+
     override fun onDestroy() {
         super.onDestroy()
         mRealm.close()
     }
 }
+
