@@ -35,6 +35,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        btnCategoryList.setOnClickListener { view ->
+            val intent = Intent(this, CategoryList::class.java)
+            startActivity(intent)
+        }
+
         btnCategory.setOnClickListener{
             categorySearch()
         }
@@ -118,7 +123,7 @@ class MainActivity : AppCompatActivity() {
             reloadListView()
         }else{
             val query: RealmQuery<Task> = mRealm.where(Task::class.java)
-            query.equalTo("category", searchWord)
+            query.equalTo("category1", searchWord)
             val taskRealmResults: RealmResults<Task> = query.findAll().sort(
                 "date",
                 Sort.DESCENDING

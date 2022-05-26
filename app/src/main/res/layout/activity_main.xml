@@ -8,10 +8,45 @@
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
-    <ListView
-        android:id="@+id/listView1"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:id="@+id/sreachEdit"
+            android:hint="カテゴリ検索"/>
+
+            <Button
+                android:id="@+id/btnCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="9dp"
+                android:layout_toStartOf="@+id/btnCategoryList"
+                android:text="検索" />
+
+            <Button
+                android:id="@+id/btnCategoryList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="3dp"
+                android:text="カテゴリ" />
+        </RelativeLayout>
+
+        <ListView
+            android:id="@+id/listView1"
+            android:layout_width="wrap_content"
+            android:layout_height="635dp" />
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

@@ -85,6 +85,7 @@ class InputActivity : AppCompatActivity() {
             // 更新の場合
             title_edit_text.setText(mTask!!.title)
             content_edit_text.setText(mTask!!.contents)
+            category_edit_text.setText(mTask!!.category1)
 
             val calendar = Calendar.getInstance()
             calendar.time = mTask!!.date
@@ -129,10 +130,12 @@ class InputActivity : AppCompatActivity() {
         //editに入力したテキストをタイトル・コンテンツそれぞれに代入
         val title = title_edit_text.text.toString()
         val content = content_edit_text.text.toString()
+        val category = category_edit_text.text.toString()
 
         //mTaskに代入
         mTask!!.title = title
         mTask!!.contents = content
+        mTask!!.category1 = category
 
         val calendar = GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute)
         val date = calendar.time
@@ -161,3 +164,4 @@ class InputActivity : AppCompatActivity() {
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, resultPendingIntent)
     }
 }
+
