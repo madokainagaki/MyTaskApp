@@ -99,22 +99,18 @@ class MainActivity : AppCompatActivity() {
         reloadListView()
     }
 
-    //リロード
+    //全項目表示
     private fun reloadListView() {
         //すべてのタスクを並べて
         val taskRealmResults = mRealm.where(Task::class.java).findAll().sort(
             "date",
             Sort.DESCENDING
         )
-        //タスクリストにコピーして
-        mTaskAdapter.mTaskList = mRealm.copyFromRealm(taskRealmResults)
-        //リストビュー1アダプターへ
-        listView1.adapter = mTaskAdapter
 
-        //変わったことを伝える
-        mTaskAdapter.notifyDataSetChanged()
+        toListView(taskRealmResults)
     }
 
+    //カテゴリ絞り込みして表示
     private fun categorySearch() {
         val searchWord = sreachEdit.text.toString()
 
@@ -123,16 +119,21 @@ class MainActivity : AppCompatActivity() {
         }else{
             val query: RealmQuery<Task> = mRealm.where(Task::class.java)
             query.equalTo("category", searchWord)
-            val SearchResults: RealmResults<Task> = query.findAll()
-            Log.d("test", searchWord)
-            Log.d("test", SearchResults.toString())
+            val taskRealmResults: RealmResults<Task> = query.findAll().sort(
+                "date",
+                Sort.DESCENDING
+            )
 
-            mTaskAdapter.mTaskList = mRealm.copyFromRealm(SearchResults)
-            //リストビュー1アダプターへ
-            listView1.adapter = mTaskAdapter
-            //変わったことを伝える
-            mTaskAdapter.notifyDataSetChanged()
+            toListView(taskRealmResults)
         }
+    }
+
+    //リストビュー1アダプターへ
+    private fun toListView(taskRealmResults: RealmResults<Task>) {
+        mTaskAdapter.mTaskList = mRealm.copyFromRealm(taskRealmResults)
+        listView1.adapter = mTaskAdapter
+        //変わったことを伝える
+        mTaskAdapter.notifyDataSetChanged()
     }
 
 
