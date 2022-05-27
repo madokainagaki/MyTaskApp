@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
-import org.w3c.dom.Text
 
 class CategoryAdapter(context: Context): BaseAdapter() {
     private val mLayoutInflater: LayoutInflater
@@ -33,7 +32,7 @@ class CategoryAdapter(context: Context): BaseAdapter() {
 
         val textView1 = view.findViewById<TextView>(android.R.id.text1)
 
-        textView1.text = mCategoryList[position].name
+        textView1.text = mCategoryList[position].categoryName
 
         return view
     }
