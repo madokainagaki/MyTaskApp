@@ -51,7 +51,39 @@ class CategoryList : AppCompatActivity() {
             addCategory()
             reloadListView()
         }
+
+        //すでにあるカテゴリを長押したときの処理
+        listView2.setOnItemLongClickListener { parent, _, position, _ ->
+            //taskにタップしたタスクを代入している
+            val category = parent.adapter.getItem(position) as Category
+
+            //ダイアログ
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("削除")
+            builder.setMessage(category.categoryName + "を削除します")
+
+            //ok押したらresultsにtaskさがして代入
+            builder.setPositiveButton("OK") { _, _ ->
+                val results =
+                    mRealm.where(Category::class.java).equalTo("id", category.id).findAll()
+
+                mRealm.beginTransaction()
+                results.deleteAllFromRealm()
+                mRealm.commitTransaction()
+
+                reloadListView()
+            }
+
+            builder.setNegativeButton("CANCEL", null)
+
+            val dialog = builder.create()
+            dialog.show()
+
+            true
+        }
+        reloadListView()
     }
+
 
     //全項目表示
     private fun reloadListView() {
@@ -72,8 +104,6 @@ class CategoryList : AppCompatActivity() {
         //変わったことを伝える
         mCategoryAdapter.notifyDataSetChanged()
     }
-
-//    ここから追加ーーーーーーーーーーーーーーーーーーー
 
     private fun addCategory() {
         val realm = Realm.getDefaultInstance()
