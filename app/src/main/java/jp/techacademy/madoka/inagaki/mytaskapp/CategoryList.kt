@@ -3,6 +3,7 @@ package jp.techacademy.madoka.inagaki.mytaskapp
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.nfc.cardemulation.CardEmulation.EXTRA_CATEGORY
 import android.os.Bundle
 import android.provider.CalendarContract.Attendees.query
 import android.util.Log
@@ -15,11 +16,14 @@ import kotlinx.android.synthetic.main.content_input.*
 import java.util.*
 
 
-const val EXTRA_Category = "jp.techacademy.madoka.inagaki.mytaskapp.CATEGORY"
+const val EXTRA_CATEGORY = "jp.techacademy.madoka.inagaki.mytaskapp.CATEGORY"
 
 class CategoryList : AppCompatActivity() {
     private lateinit var mRealm: Realm
     private var mCategory: Category? = null
+
+    private var name: String? = null
+    private var categoryId: Int = 0
 
     private val mRealmListener = object : RealmChangeListener<Realm> {
         override fun onChange(element: Realm) {
@@ -52,15 +56,27 @@ class CategoryList : AppCompatActivity() {
             reloadListView()
         }
 
+
+        //すでにあるカテゴリをタップしたときの処理
+        listView2.setOnItemClickListener { parent, _, position, _ ->
+            val category = parent.adapter.getItem(position) as Category
+            name = category.categoryName
+            categoryId = category.id
+            btnAddCategory.setText("上書き")
+
+            Log.d("test", name.toString())
+            Log.d("test", categoryId.toString())
+            add_category_edit_text.setText(name)
+        }
+
         //すでにあるカテゴリを長押したときの処理
         listView2.setOnItemLongClickListener { parent, _, position, _ ->
-            //taskにタップしたタスクを代入している
             val category = parent.adapter.getItem(position) as Category
 
             //ダイアログ
             val builder = AlertDialog.Builder(this)
             builder.setTitle("削除")
-            builder.setMessage(category.categoryName + "を削除します")
+            builder.setMessage("カテゴリ" + category.categoryName + "を削除します")
 
             //ok押したらresultsにtaskさがして代入
             builder.setPositiveButton("OK") { _, _ ->
@@ -80,10 +96,9 @@ class CategoryList : AppCompatActivity() {
             dialog.show()
 
             true
+            }
+            reloadListView()
         }
-        reloadListView()
-    }
-
 
     //全項目表示
     private fun reloadListView() {
@@ -96,7 +111,6 @@ class CategoryList : AppCompatActivity() {
         toListView(categoryRealmResults)
     }
 
-
     //リストビュー2アダプターへ
     private fun toListView(categoryRealmResults: RealmResults<Category>) {
         mCategoryAdapter.mCategoryList = mRealm.copyFromRealm(categoryRealmResults)
@@ -106,43 +120,49 @@ class CategoryList : AppCompatActivity() {
     }
 
     private fun addCategory() {
-        val realm = Realm.getDefaultInstance()
+            val realm = Realm.getDefaultInstance()
 
-        //追加したりするときに必要なもの
-        realm.beginTransaction()
+            //追加したりするときに必要なもの
+            realm.beginTransaction()
 
-        mCategory = Category()
+            mCategory = Category()
+            btnAddCategory.setText("追加")
 
-        val categoryRealmResults = realm.where(Category::class.java).findAll()
+        if (categoryId != 0) {
+            //カテゴリidが0じゃないならもともとのidを代入して上書きにする
+            mCategory!!.id = categoryId
+        }else{
+            val categoryRealmResults = realm.where(Category::class.java).findAll()
 
-        val maxId = categoryRealmResults.max("id")
-        Log.d("test",maxId.toString())
+            val maxId = categoryRealmResults.max("id")
+            Log.d("test", maxId.toString())
 
-        val identifier: Int =
-        //max(最大)のidがnull→まだ何もない→idは0になる
-            //nullじゃない→すでにidがある→一番大きなidに+1して最新のidを生成
-            if (maxId != null) {
-                maxId!!.toInt() + 1
-            } else {
-                0
-            }
-        //それをidとして代入
-        mCategory!!.id = identifier
+            val identifier: Int =
+            //max(最大)のidがnull→まだ何もない→idは0になる
+                //nullじゃない→すでにidがある→一番大きなidに+1して最新のidを生成
+                if (maxId != null) {
+                    maxId!!.toInt() + 1
+                } else {
+                    0
+                }
+            //それをidとして代入
+            mCategory!!.id = identifier
+        }
 
-        //editに入力したテキストをタイトル・コンテンツそれぞれに代入
-        val categoryName = add_category_edit_text.text.toString()
+            //editに入力したテキストをタイトル・コンテンツそれぞれに代入
+            val categoryName = add_category_edit_text.text.toString()
 
-        //mTaskに代入
-        mCategory!!.categoryName = categoryName
+            //mTaskに代入
+            mCategory!!.categoryName = categoryName
 
-        add_category_edit_text.text = null
+            add_category_edit_text.text = null
 
-        //できあがったmTaskをコミット
-        realm.copyToRealmOrUpdate(mCategory!!)
-        realm.commitTransaction()
+            //できあがったmTaskをコミット
+            realm.copyToRealmOrUpdate(mCategory!!)
+            realm.commitTransaction()
 
-        realm.close()
-    }
+            realm.close()
+        }
 
 
     override fun onDestroy() {
