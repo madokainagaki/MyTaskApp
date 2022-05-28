@@ -29,17 +29,12 @@
             android:id="@+id/spnCategory"/>
 
     <EditText
-        android:id="@+id/category_edit_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/title_edit_text"
-        android:hint="カテゴリ" />
-    <EditText
         android:id="@+id/content_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/category_edit_text"
+        android:layout_below="@id/title_edit_text"
         android:hint="内容" />
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -50,7 +45,7 @@
                 android:id="@+id/date_button"
                 android:layout_width="110dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/content_edit_text"
+
                 android:layout_alignParentStart="true"
                 android:layout_toLeftOf="@+id/times_button"
                 android:text="----/--/--"

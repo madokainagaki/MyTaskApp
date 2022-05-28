@@ -7,10 +7,13 @@ import android.app.TimePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.widget.Toolbar
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import android.widget.Toast
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_input.*
@@ -60,7 +63,7 @@ class InputActivity : AppCompatActivity() {
 
         spnCategory.adapter = CategoryAdapter(this)
 
-        // ActionBarを設定する
+            // ActionBarを設定する
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
         if (supportActionBar != null) {
@@ -91,7 +94,8 @@ class InputActivity : AppCompatActivity() {
             // 更新の場合
             title_edit_text.setText(mTask!!.title)
             content_edit_text.setText(mTask!!.contents)
-            category_edit_text.setText(mTask!!.category1)
+
+//            category_edit_text.setText(mTask!!.category1)
 
             val calendar = Calendar.getInstance()
             calendar.time = mTask!!.date
@@ -136,7 +140,12 @@ class InputActivity : AppCompatActivity() {
         //editに入力したテキストをタイトル・コンテンツそれぞれに代入
         val title = title_edit_text.text.toString()
         val content = content_edit_text.text.toString()
-        val category = category_edit_text.text.toString()
+
+        //pinnerの押した場所からカテゴリ名取得
+        val categoryPosition = spnCategory.selectedItemPosition
+        val result = realm.where(Category::class.java).findAll()
+        val categories = result.toMutableList()
+        val category = categories[categoryPosition].categoryName
 
         //mTaskに代入
         mTask!!.title = title

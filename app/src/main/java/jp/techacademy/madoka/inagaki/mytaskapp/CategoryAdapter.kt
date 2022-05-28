@@ -6,13 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import io.realm.Realm
 
 class CategoryAdapter(context: Context): BaseAdapter() {
+    val realm = Realm.getDefaultInstance()
+    val result = realm.where(Category::class.java).findAll()
+    val categories = result.toMutableList()
+
     private val mLayoutInflater: LayoutInflater
     var mCategoryList= mutableListOf<Category>()
 
     init {
         this.mLayoutInflater = LayoutInflater.from(context)
+        mCategoryList = categories
     }
 
     override fun getCount(): Int {
@@ -32,8 +38,11 @@ class CategoryAdapter(context: Context): BaseAdapter() {
 
         val textView1 = view.findViewById<TextView>(android.R.id.text1)
 
-        textView1.text = mCategoryList[position].categoryName
-
+      //  if (categoryAdp == 0) {
+            textView1.text = mCategoryList[position].categoryName
+       // }else{
+      //      textView1.text = mCategoryList[position].id.toString()
+     //   }
         return view
     }
 }
