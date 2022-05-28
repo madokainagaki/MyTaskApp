@@ -1,13 +1,14 @@
 package jp.techacademy.madoka.inagaki.mytaskapp
 
 import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Intent
-import android.nfc.cardemulation.CardEmulation.EXTRA_CATEGORY
 import android.os.Bundle
 import android.provider.CalendarContract.Attendees.query
 import android.provider.Contacts
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import io.realm.*
@@ -127,13 +128,13 @@ class CategoryList : AppCompatActivity() {
     }
 
     private fun addCategory() {
-            val realm = Realm.getDefaultInstance()
+        val realm = Realm.getDefaultInstance()
 
-            //追加したりするときに必要なもの
-            realm.beginTransaction()
+        //追加したりするときに必要なもの
+        realm.beginTransaction()
 
-            mCategory = Category()
-            btnAddCategory.setText("追加")
+        mCategory = Category()
+        btnAddCategory.setText("追加")
 
         if (categoryId != 0) {
             //カテゴリidが0じゃないならもともとのidを代入して上書きにする
@@ -156,19 +157,21 @@ class CategoryList : AppCompatActivity() {
             mCategory!!.id = identifier
         }
 
-            //editに入力したテキストをタイトル・コンテンツそれぞれに代入
-            val categoryName = add_category_edit_text.text.toString()
+        //editに入力したテキストをタイトル・コンテンツそれぞれに代入
+        val categoryName = add_category_edit_text.text.toString()
 
-            //mTaskに代入
-            mCategory!!.categoryName = categoryName
+        //mTaskに代入
+        mCategory!!.categoryName = categoryName
 
-            add_category_edit_text.text = null
+        add_category_edit_text.text = null
 
-            //できあがったmTaskをコミット
-            realm.copyToRealmOrUpdate(mCategory!!)
-            realm.commitTransaction()
+        //できあがったmTaskをコミット
+        realm.copyToRealmOrUpdate(mCategory!!)
+        realm.commitTransaction()
 
-            realm.close()
+        realm.close()
+
+        categoryId = 0
         }
 
 

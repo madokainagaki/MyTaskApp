@@ -7,13 +7,9 @@ import android.app.TimePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.widget.Toolbar
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.Spinner
 import io.realm.Realm
-import io.realm.RealmChangeListener
 import kotlinx.android.synthetic.main.content_input.*
 import java.util.*
 
@@ -25,9 +21,6 @@ class InputActivity : AppCompatActivity() {
     private var mHour = 0
     private var mMinute = 0
     private var mTask: Task? = null
-    private lateinit var mRealm: Realm
-    private var mCategory: Category? = null
-
 
     private val mOnDateClickListener = View.OnClickListener {
         val datePickerDialog = DatePickerDialog(this,
@@ -57,19 +50,9 @@ class InputActivity : AppCompatActivity() {
         finish()
     }
 
-    private val spinnerItems = mutableListOf<Category>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_input)
-
-        val spinnerItems = arrayOf("1","2","3","4")
-        val spinner = findViewById<Spinner>(R.id.category_spiner)
-        // Adapterの生成
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinnerItems)
-        // 選択肢の各項目のレイアウト
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        // AdapterをSpinnerのAdapterとして設定
-        spinner.adapter = adapter
 
         // ActionBarを設定する
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
@@ -86,12 +69,9 @@ class InputActivity : AppCompatActivity() {
         // EXTRA_TASKからTaskのidを取得して、 idからTaskのインスタンスを取得する
         val intent = intent
         val taskId = intent.getIntExtra(EXTRA_TASK, -1)
-        Log.d("test",taskId.toString())
         val realm = Realm.getDefaultInstance()
         mTask = realm.where(Task::class.java).equalTo("id", taskId).findFirst()
         realm.close()
-
-
 
         if (mTask == null) {
             // 新規作成の場合
