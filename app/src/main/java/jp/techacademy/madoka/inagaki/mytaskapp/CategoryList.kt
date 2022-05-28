@@ -1,9 +1,11 @@
 package jp.techacademy.madoka.inagaki.mytaskapp
 
 import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Intent
+import android.nfc.cardemulation.CardEmulation.EXTRA_CATEGORY
 import android.os.Bundle
 import android.provider.CalendarContract.Attendees.query
-import android.provider.Contacts
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
@@ -35,6 +37,8 @@ class CategoryList : AppCompatActivity() {
 
     private lateinit var mCategoryAdapter: CategoryAdapter
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_category_list)
@@ -43,17 +47,12 @@ class CategoryList : AppCompatActivity() {
         //realmの設定
         mRealm = Realm.getDefaultInstance()
         mRealm.addChangeListener(mRealmListener)
-        //激しくテスト中
-        val test = mRealm.where(Category::class.java).findAll()
-        Log.d("test", test[0]?.categoryName.toString())
-        Log.d("test", test.toString())
 
         // 遷移したとき最初に　ListView2へ全項目表示する
         val categoryRealmResults = mRealm.where(Category::class.java).findAll().sort(
             "id",
             Sort.DESCENDING
         )
-
         mCategoryAdapter = CategoryAdapter(this)
         mCategoryAdapter.mCategoryList = mRealm.copyFromRealm(categoryRealmResults)
         listView2.adapter = mCategoryAdapter
@@ -180,3 +179,4 @@ class CategoryList : AppCompatActivity() {
         mRealm.close()
     }
 }
+

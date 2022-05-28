@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import io.realm.Realm
 import kotlinx.android.synthetic.main.content_input.*
 import java.util.*
@@ -21,6 +23,11 @@ class InputActivity : AppCompatActivity() {
     private var mHour = 0
     private var mMinute = 0
     private var mTask: Task? = null
+
+    val realm = Realm.getDefaultInstance()
+    val result = realm.where(Category::class.java).findAll()
+    val categories = result.toList()
+    private val spinnerItems = listOf(categories)
 
     private val mOnDateClickListener = View.OnClickListener {
         val datePickerDialog = DatePickerDialog(this,
@@ -53,6 +60,10 @@ class InputActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_input)
+
+        val adapter = ArrayAdapter(applicationContext,
+            android.R.layout.simple_spinner_item, spinnerItems)
+        spnCategory.adapter = adapter
 
         // ActionBarを設定する
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
