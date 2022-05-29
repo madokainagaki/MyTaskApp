@@ -29,8 +29,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        spnCategory2.adapter = CategoryAdapter(this)
+//        spnCategory2.adapter = CategoryAdapter(this)
 
 
         fab.setOnClickListener { view ->

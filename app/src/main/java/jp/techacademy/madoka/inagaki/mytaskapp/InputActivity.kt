@@ -94,6 +94,14 @@ class InputActivity : AppCompatActivity() {
             // 更新の場合
             title_edit_text.setText(mTask!!.title)
             content_edit_text.setText(mTask!!.contents)
+            val adapter = spnCategory.adapter as CategoryAdapter
+            Log.d("test", adapter.toString())
+            val selectedPosition = adapter.mCategoryList.indexOfFirst { it.categoryName== mTask!!.category1 }
+            if (selectedPosition >= 0) {
+                spnCategory.setSelection(selectedPosition)
+            Log.d("test", selectedPosition.toString())
+            spnCategory.setSelection(selectedPosition)
+            }
 
 //            category_edit_text.setText(mTask!!.category1)
 
